@@ -1,0 +1,3 @@
+# We save our *.pem files into the ssl folder so that each time the server
+# restarts with local HTTPS we don't have to generate a new certificate.
+ssl/server.pem

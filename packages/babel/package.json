@@ -1,0 +1,13 @@
+{
+  "name": "@carbon/babel",
+  "private": true,
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.1.0"
+  }
+}

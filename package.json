@@ -1,0 +1,39 @@
+{
+  "name": "@carbon/carbonated",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": "git@github.com:carbon-design-system/carbonated.git",
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "ui"
+    ],
+    "nohoist": []
+  },
+  "engines": {
+    "node": "10.x"
+  },
+  "scripts": {
+    "build": "lerna run build --stream --prefix",
+    "ci-check": "yarn format:diff && yarn jest --ci --reporters=default --reporters=jest-junit",
+    "clean": "lerna run clean && lerna clean --yes && rimraf build && rimraf node_modules",
+    "doctoc": "doctoc --title '## Table of Contents' docs",
+    "format": "prettier --write \"**/*.{css,js,md,scss,ts}\"",
+    "format:diff": "prettier --list-different \"**/*.{css,js,md,scss,ts}\"",
+    "format:staged": "prettier --write",
+    "watch": "lerna run watch --stream --prefix"
+  },
+  "devDependencies": {
+    "doctoc": "^1.4.0",
+    "lerna": "^3.10.6",
+    "prettier": "^1.15.3",
+    "rimraf": "^2.6.3"
+  },
+  "prettier": {
+    "jsxBracketSameLine": true,
+    "printWidth": 80,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  }
+}
