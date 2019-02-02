@@ -1,0 +1,9 @@
+---
+applications:
+- name: carbonated
+  memory: 128MB
+  instances: 1
+  routes:
+    - route: tools.carbondesignsystem.com
+  docker:
+    username: token

@@ -1,10 +1,13 @@
 version: 2
 
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:10.15.1
+
 jobs:
   test:
-    docker:
-      - image: circleci/node:10
-    working_directory: ~/repo
+    <<: *defaults
     steps:
       - checkout
       - run:
@@ -26,8 +29,44 @@ jobs:
       - store_artifacts:
           path: reports
 
+  deploy:
+    <<: *defaults
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build and push docker image
+          command: |
+            # Install `ibmcloud` CLI and login
+            curl -fsSL https://clis.ng.bluemix.net/install/linux | sh
+            ibmcloud login \
+              --apikey $CLOUD_API_KEY \
+              -a https://api.ng.bluemix.net \
+              -o carbon-design-system \
+              -s production
+
+            # Install the Container Registry plug-in
+            ibmcloud plugin install container-registry -r Bluemix
+
+            # Log the local Docker client in to IBM Cloud Container Registry
+            ibmcloud cr login
+
+            DOCKER_IMAGE="registry.ng.bluemix.net/carbon/carbonated:${CIRCLE_TAG}"
+            docker build -t $DOCKER_IMAGE .
+            docker push $DOCKER_IMAGE
+            CF_DOCKER_PASSWORD=$DOCKER_API_KEY ibmcloud cf push -f .circleci/manifest.yml -o $DOCKER_IMAGE
+
 workflows:
   version: 2
   main:
     jobs:
       - test
+      - deploy
+          requires:
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
