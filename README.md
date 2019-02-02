@@ -5,7 +5,7 @@
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 [![PRs welcome!](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./.github/CONTRIBUTING.md)
 
-> [Internal] Internal services for building the Carbon Design System.
+> Internal services for building the Carbon Design System.
 
 ## Getting started
 
