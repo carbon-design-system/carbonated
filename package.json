@@ -16,19 +16,25 @@
   },
   "scripts": {
     "build": "lerna run build --stream --prefix",
-    "ci-check": "yarn format:diff && yarn jest --ci --reporters=default --reporters=jest-junit",
+    "ci-check": "yarn format:diff && yarn test --ci --reporters=default --reporters=jest-junit",
     "clean": "lerna run clean && lerna clean --yes && rimraf build && rimraf node_modules",
     "doctoc": "doctoc --title '## Table of Contents' docs",
     "format": "prettier --write \"**/*.{css,js,md,scss,ts}\"",
     "format:diff": "prettier --list-different \"**/*.{css,js,md,scss,ts}\"",
     "format:staged": "prettier --write",
+    "test": "jest",
     "watch": "lerna run watch --stream --prefix"
   },
   "devDependencies": {
+    "@babel/core": "^7.2.2",
     "@commitlint/cli": "^7.5.0",
     "@commitlint/config-conventional": "^7.5.0",
+    "babel-jest": "^24.0.0",
     "doctoc": "^1.4.0",
     "husky": "^1.3.1",
+    "jest": "^24.0.0",
+    "jest-circus": "^24.0.0",
+    "jest-junit": "^6.2.1",
     "lerna": "^3.10.6",
     "lint-staged": "^8.1.3",
     "prettier": "^1.15.3",
@@ -57,6 +63,37 @@
     "*.md": [
       "yarn format:staged",
       "git add"
+    ]
+  },
+  "jest": {
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
+    "setupFiles": [
+      "<rootDir>/config/jest/setup.js"
+    ],
+    "testMatch": [
+      "<rootDir>/**/__tests__/**/*.js?(x)",
+      "<rootDir>/**/?(*.)(spec|test).js?(x)",
+      "<rootDir>/**/?(*-)(spec|test).js?(x)"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx)$": "./config/jest/jsTransform.js",
+      "^.+\\.css$": "./config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|css|json)$)": "./config/jest/fileTransform.js"
+    },
+    "testRunner": "jest-circus/runner",
+    "testPathIgnorePatterns": [
+      "/build/",
+      "/dist/",
+      "/es/",
+      "/lib/",
+      "/umd/",
+      "<rootDir>/packages/babel/test"
+    ],
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
     ]
   },
   "prettier": {
