@@ -52,7 +52,7 @@ jobs:
             # Log the local Docker client in to IBM Cloud Container Registry
             ibmcloud cr login
 
-            DOCKER_IMAGE="registry.ng.bluemix.net/carbon/carbonated:${CIRCLE_TAG}"
+            DOCKER_IMAGE="registry.ng.bluemix.net/carbon/carbonated:${CIRCLE_SHA1}"
             docker build -t $DOCKER_IMAGE .
             docker push $DOCKER_IMAGE
             CF_DOCKER_PASSWORD=$DOCKER_API_KEY ibmcloud cf push -f .circleci/manifest.yml -o $DOCKER_IMAGE
@@ -66,7 +66,5 @@ workflows:
           requires:
             - test
           filters:
-            tags:
-              only: /^v.*/
             branches:
-              ignore: /.*/
+              only: master
