@@ -1,2 +1,14 @@
 # NLS_ENCODING=UTF-8
-greeting: Hello world
+
+# Navigation
+navigation.links.manage: Manage
+navigation.links.support: Support
+
+# Home
+home.greeting: Home
+
+# Manage
+manage.greeting: Manage
+
+# Support
+support.greeting: Support
