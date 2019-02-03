@@ -10,7 +10,7 @@ export function createBody(manifest, initialData) {
     manifest['main.js'],
   ]
     .filter(Boolean)
-    .map(path => `<script crossorigin="anonymous" src="${path}"></script>`);
+    .map(path => `<script src="${path}"></script>`);
   const inlineScript = `<script>window.__INITIAL_DATA__ = ${JSON.stringify(
     initialData
   )};</script>`;

@@ -76,21 +76,21 @@ export const prefetchHints = {
             return {
               chunkName,
               rel: 'prefetch',
-              href: `/${manifest[chunkName]}`,
+              href: `${manifest[chunkName]}`,
               as: 'script',
             };
           case '.css':
             return {
               chunkName,
               rel: 'prefetch',
-              href: `/${manifest[chunkName]}`,
+              href: `${manifest[chunkName]}`,
               as: 'style',
             };
           default:
             return {
               chunkName,
               rel: 'prefetch',
-              href: `/${manifest[chunkName]}`,
+              href: `${manifest[chunkName]}`,
             };
         }
       }),

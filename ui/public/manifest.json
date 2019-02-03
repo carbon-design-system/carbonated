@@ -1,6 +1,6 @@
 {
-  "name": "Page Title",
-  "short_name": "Page Title",
-  "description": "Page Description",
+  "name": "Carbonated",
+  "short_name": "Carbonated",
+  "description": "Internal tooling for building the Carbon Design System",
   "display": "standalone"
 }

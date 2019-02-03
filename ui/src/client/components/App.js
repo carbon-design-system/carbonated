@@ -5,13 +5,26 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { Router } from '@reach/router';
+import { Loading } from 'carbon-components-react';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import Navigation from './Navigation';
+
+const Home = React.lazy(() => import('../routes/Home'));
+const Manage = React.lazy(() => import('../routes/Manage'));
+const Support = React.lazy(() => import('../routes/Support'));
 
 export default function App() {
   return (
-    <div>
-      <FormattedMessage id="greeting" defaultMessage="Hello world" />
-    </div>
+    <>
+      <Navigation />
+      <React.Suspense fallback={<Loading />}>
+        <Router>
+          <Home path="/" />
+          <Manage path="/manage" />
+          <Support path="/support" />
+        </Router>
+      </React.Suspense>
+    </>
   );
 }

@@ -33,7 +33,6 @@ export const createResponse = ({
     locale: req.locale,
     messages: messages[language][req.locale] || {},
   };
-  console.log(messages);
 
   const lateChunk = [createBody(manifest, initialData), '</html>'].join('');
 
