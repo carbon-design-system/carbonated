@@ -57,21 +57,16 @@ module.exports = {
         .replace(/\\/g, '/'),
   },
   optimization: {
-    runtimeChunk: true,
+    runtimeChunk: 'single',
     splitChunks: {
-      chunks: 'all',
-      name: false,
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor',
+          chunks: 'all',
+        },
+      },
     },
-    // runtimeChunk: 'single',
-    // splitChunks: {
-    // cacheGroups: {
-    // vendor: {
-    // test: /[\\/]node_modules[\\/]/,
-    // name: 'vendor',
-    // chunks: 'all',
-    // },
-    // },
-    // },
     minimizer: [
       new TerserPlugin({
         // Use multi-process parallel running to improve the build speed
