@@ -288,6 +288,6 @@ module.exports = {
     tls: 'empty',
   },
   performance: {
-    hints: 'warning',
+    hints: false,
   },
 };
