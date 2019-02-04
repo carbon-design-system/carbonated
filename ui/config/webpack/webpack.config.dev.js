@@ -108,6 +108,7 @@ module.exports = {
                   plugins: [require.resolve('react-hot-loader/babel')],
                 },
               },
+              'react-hot-loader/webpack',
             ],
           },
           // "postcss" loader applies autoprefixer to our CSS.

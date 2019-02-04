@@ -42,6 +42,8 @@ const middleware = [
   // Setup handling of different languages/locales
   setupLocale([...supported]),
 
+  require('./middleware/graphql'),
+
   // Handle serving static assets provided through ASSET_PATH
   assets,
   server => {
