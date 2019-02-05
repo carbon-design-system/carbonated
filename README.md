@@ -23,7 +23,7 @@ dependencies and publishing our packages. These include:
 
 In order for you to install all the dependencies in this project, you'll need to
 [install Yarn](https://yarnpkg.com/en/docs/install) and run the following
-command in your terminal:
+command in your terminal while using Node v10:
 
 ```bash
 yarn install --frozen-lockfile
