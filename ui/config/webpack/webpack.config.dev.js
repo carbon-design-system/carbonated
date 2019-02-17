@@ -104,7 +104,7 @@ module.exports = {
                   // directory for faster rebuilds.
                   cacheDirectory: true,
                   babelrc: false,
-                  presets: [require.resolve('@carbon/babel')],
+                  presets: [require.resolve('@carbonated/babel')],
                   plugins: [require.resolve('react-hot-loader/babel')],
                 },
               },

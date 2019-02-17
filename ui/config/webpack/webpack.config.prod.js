@@ -155,7 +155,7 @@ module.exports = {
                   compact: true,
                   babelrc: false,
                   sourceMap: true,
-                  presets: [require.resolve('@carbon/babel')],
+                  presets: [require.resolve('@carbonated/babel')],
                   plugins: [require.resolve('react-hot-loader/babel')],
                 },
               },
@@ -281,8 +281,5 @@ module.exports = {
     fs: 'empty',
     net: 'empty',
     tls: 'empty',
-  },
-  performance: {
-    hints: false,
   },
 };
