@@ -11,7 +11,7 @@ const {
   setupDevelopment,
   setupHTML,
   setupLocale,
-} = require('@carbon/server');
+} = require('@carbonated/server');
 const express = require('express');
 const path = require('path');
 const { supported } = require('../shared/languages');
