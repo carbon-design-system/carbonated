@@ -10,7 +10,7 @@
 const { createTransformer } = require('babel-jest');
 
 const babelOptions = {
-  presets: [require.resolve('@carbon/babel/test')],
+  presets: [require.resolve('@carbonated/babel/test')],
 };
 
 module.exports = createTransformer(babelOptions);
