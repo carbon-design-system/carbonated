@@ -282,4 +282,9 @@ module.exports = {
     net: 'empty',
     tls: 'empty',
   },
+  // TODO: remove, this is currently caused by `carbon-components-react` and
+  // `@carbon/icons-react`. We need to figure out how to tree-shake them
+  performance: {
+    hints: false,
+  },
 };
