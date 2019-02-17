@@ -21,7 +21,7 @@ const baseConfig = {
     babel({
       exclude: 'node_modules/**',
       babelrc: false,
-      presets: [require.resolve('@carbon/babel')],
+      presets: [require.resolve('@carbonated/babel')],
     }),
   ],
 };

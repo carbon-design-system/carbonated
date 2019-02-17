@@ -1,6 +1,6 @@
 'use strict';
 
-const { listen, logger } = require('@carbon/server');
+const { listen, logger } = require('@carbonated/server');
 const { HOST, PORT, PROTOCOL } = require('config');
 const setupServer = require('./server');
 
