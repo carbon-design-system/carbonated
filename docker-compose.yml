@@ -1,0 +1,22 @@
+version: '3.1'
+services:
+  # postgres:
+    # image: postgres:9.6.1
+    # ports:
+      # - "${DB_PORT:-5432}:5432"
+    # volumes:
+      # - "local-db-volume:/var/lib.postgresql/data"
+    # environment:
+      # POSTGRES_USER: postgres
+      # POSTGRES_PASSWORD: postgres
+      # POSTGRES_DB: carbonated_dev
+  redis:
+    image: redis:5.0.3
+    ports:
+      - "6379:6379"
+    volumes:
+      - "local-db-volume:/data"
+    command: ["redis-server", "--appendonly", "yes"]
+volumes:
+  local-db-volume:
+    driver: local
