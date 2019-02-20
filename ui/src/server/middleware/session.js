@@ -7,8 +7,10 @@
 
 'use strict';
 
+const { logger } = require('@carbonated/server');
 const { NODE_ENV, SESSION_COOKIE_SECRET } = require('config');
 const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
 
 const sessionCookieName = 'carbonated.sid';
 const sessionCookie = {
@@ -19,13 +21,20 @@ const sessionCookie = {
   secure: NODE_ENV === 'production',
 };
 
-module.exports = server => {
+module.exports = (server, context) => {
+  const { redisClient } = context;
+
   server.use(
     session({
       name: sessionCookieName,
       resave: false,
       saveUninitialized: false,
       secret: SESSION_COOKIE_SECRET,
+      store: new RedisStore({
+        client: redisClient,
+        logErrors: logger.error,
+        prefix: 'carbonated.sid',
+      }),
       cookie: sessionCookie,
     })
   );

@@ -68,7 +68,10 @@ export default function Home() {
               <>
                 <p>
                   Hi there! <span aria-label="waving">👋</span> Looks like
-                  you're not authenticated yet, maybe try logging in? 👇
+                  you're not authenticated yet, maybe try logging in?{' '}
+                  <span aria-label="finger pointing below text at login text">
+                    👇
+                  </span>
                 </p>
                 {Login}
               </>

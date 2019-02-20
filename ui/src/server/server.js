@@ -12,10 +12,12 @@ const {
   setupHTML,
   setupLocale,
 } = require('@carbonated/server');
+const { REDIS_CONN_STR, REDIS_CERT_BASE64 } = require('config');
 const express = require('express');
 const path = require('path');
 const { supported } = require('../shared/languages');
 const { getMessages } = require('./tools/language');
+const { createRedisClient } = require('./storage/redis');
 
 function getConfig() {
   return {
@@ -74,12 +76,20 @@ const middleware = [
   // Error handling so we don't pollute the response with stack traces
   error,
 ].filter(Boolean);
-const ASSET_PATH = path.resolve(__dirname, '../../build');
-const context = {
-  build: getBuildContext({
-    assetPath: ASSET_PATH,
-    getConfig,
-  }),
-};
 
-module.exports = () => applyMiddleware(server, middleware, context);
+module.exports = async () => {
+  const ASSET_PATH = path.resolve(__dirname, '../../build');
+  const redisClient = await createRedisClient(
+    REDIS_CONN_STR,
+    REDIS_CERT_BASE64
+  );
+  const context = {
+    build: getBuildContext({
+      assetPath: ASSET_PATH,
+      getConfig,
+    }),
+    redisClient,
+  };
+
+  return applyMiddleware(server, middleware, context);
+};
