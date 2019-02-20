@@ -11,11 +11,29 @@ import React from 'react';
 import { Query } from 'react-apollo';
 import { FormattedMessage } from 'react-intl';
 
-const HELLO_WORLD_QUERY = gql`
+const VIEWER_QUERY = gql`
   {
-    hello
+    viewer {
+      name
+    }
   }
 `;
+
+const Login = (
+  <div>
+    <a href="/login" rel="noopener noreferrer">
+      Login
+    </a>
+  </div>
+);
+
+const Logout = (
+  <div>
+    <a href="/logout" rel="noopener noreferrer">
+      Logout
+    </a>
+  </div>
+);
 
 export default function Home() {
   return (
@@ -25,8 +43,7 @@ export default function Home() {
       </h1>
 
       <div>
-        <p>Data example:</p>
-        <Query query={HELLO_WORLD_QUERY}>
+        <Query query={VIEWER_QUERY}>
           {({ loading, error, data }) => {
             if (loading) {
               return 'Loading...';
@@ -35,10 +52,26 @@ export default function Home() {
               console.error(error);
               return 'Whoops! Something went wrong.';
             }
+
+            if (data.viewer) {
+              return (
+                <>
+                  <p>
+                    Hi {data.viewer.name}! <span aria-label="waving">👋</span>
+                  </p>
+                  {Logout}
+                </>
+              );
+            }
+
             return (
-              <pre>
-                <code>{JSON.stringify(data, null, 2)}</code>
-              </pre>
+              <>
+                <p>
+                  Hi there! <span aria-label="waving">👋</span> Looks like
+                  you're not authenticated yet, maybe try logging in? 👇
+                </p>
+                {Login}
+              </>
             );
           }}
         </Query>

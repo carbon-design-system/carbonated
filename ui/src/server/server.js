@@ -39,6 +39,9 @@ const middleware = [
   // options
   security,
 
+  require('./middleware/session'),
+  require('./middleware/oauth'),
+
   // Setup handling of different languages/locales
   setupLocale([...supported]),
 

@@ -6,14 +6,17 @@ const {
   GraphQLString,
   GraphQLNonNull,
 } = require('graphql');
+const viewerType = require('./types/viewer');
 
 const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType',
     fields: {
-      hello: {
-        type: new GraphQLNonNull(GraphQLString),
-        resolve: () => 'world',
+      viewer: {
+        type: viewerType,
+        resolve(root, args, context) {
+          return context.session.user;
+        },
       },
     },
   }),
