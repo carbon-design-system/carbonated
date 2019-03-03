@@ -22,16 +22,17 @@ const sessionCookie = {
 };
 
 module.exports = (server, context) => {
-  const { redisClient } = context;
+  const { redis } = context;
 
   server.use(
+    redis.circuitBreaker,
     session({
       name: sessionCookieName,
       resave: false,
       saveUninitialized: false,
       secret: SESSION_COOKIE_SECRET,
       store: new RedisStore({
-        client: redisClient,
+        client: redis.client,
         logErrors: logger.error,
         prefix: 'carbonated.sid',
       }),
@@ -43,7 +44,7 @@ module.exports = (server, context) => {
     res.redirect('/auth/github');
   });
 
-  server.get('/logout', (req, res, next) => {
+  server.get('/logout', redis.circuitBreaker, (req, res, next) => {
     if (!req.session) {
       res.redirect('/');
       return;

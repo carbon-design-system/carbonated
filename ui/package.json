@@ -67,6 +67,7 @@
     "rimraf": "^2.6.3",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
+    "supertest": "^3.4.2",
     "terser-webpack-plugin": "^1.2.1",
     "thread-loader": "^2.1.1",
     "url-loader": "^1.1.2",

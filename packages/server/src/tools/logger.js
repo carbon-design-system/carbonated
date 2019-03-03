@@ -3,11 +3,18 @@
 import { NODE_ENV, LOG_LEVEL } from 'config';
 import winston from 'winston';
 
-const format =
-  NODE_ENV === 'production' ? winston.format.json() : winston.format.simple();
+const errorStackFormat = winston.format(info => {
+  if (info instanceof Error) {
+    info.message = `${info.message} ${info.stack}`;
+  }
+  return info;
+});
 
 export const logger = winston.createLogger({
-  format,
+  format: winston.format.combine(
+    errorStackFormat(),
+    NODE_ENV === 'production' ? winston.format.json() : winston.format.simple()
+  ),
   level: LOG_LEVEL,
   transports: [
     new winston.transports.Console({

@@ -8,13 +8,19 @@
 'use strict';
 
 const { logger } = require('@carbonated/server');
+const redis = require('redis');
 const safe = require('../tools/safe');
 
-const redis = require('redis');
+function retryStrategy({ attempt }) {
+  logger.info(`retrying redis connection, attempt #${attempt}`);
+  return Math.pow(2, attempt - 1) * 100;
+}
 
 function createRedisClient(connectionString, certBase64) {
   const url = new URL(connectionString);
-  let clientOptions = {};
+  let clientOptions = {
+    retry_strategy: retryStrategy,
+  };
 
   if (certBase64) {
     clientOptions.tls = {
@@ -64,6 +70,54 @@ async function createRedisClientWithRetries(
   throw error;
 }
 
+async function create(connectionString, certBase64) {
+  const client = await createRedisClientWithRetries(
+    connectionString,
+    certBase64
+  );
+
+  let _status = 1;
+
+  client.on('error', error => {
+    logger.error(error);
+    _status = 0;
+  });
+
+  client.on('reconnecting', () => {
+    _status = 0;
+  });
+
+  client.on('ready', () => {
+    logger.info('redis client ready');
+    _status = 1;
+  });
+
+  const circuitBreaker = (req, res, next) => {
+    if (_status) {
+      next();
+      return;
+    }
+    res.status(503).send('Service unavailable');
+  };
+
+  return {
+    // Redis client used to send requests or pass along to session middleware
+    client,
+
+    // Common circuit breaker middleware used for handlers that require an
+    // active redis client
+    circuitBreaker,
+
+    // Provide way to read status of client connection, useful for health check
+    // handler
+    get status() {
+      return _status;
+    },
+  };
+}
+
 module.exports = {
-  createRedisClient: createRedisClientWithRetries,
+  create,
+  createRedisClient,
+  createRedisClientWithRetries,
 };
