@@ -1,8 +1,8 @@
 ---
 applications:
 - name: carbonated
-  memory: 128MB
-  instances: 1
+  memory: 256MB
+  instances: 3
   routes:
     - route: tools.carbondesignsystem.com
   docker:
