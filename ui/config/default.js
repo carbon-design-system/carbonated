@@ -35,4 +35,7 @@ module.exports = {
 
   REDIS_CONN_STR: process.env.REDIS_CONN_STR,
   REDIS_CERT_BASE64: process.env.REDIS_CERT_BASE64,
+
+  POSTGRES_CONN_STR: process.env.POSTGRES_CONN_STR,
+  POSTGRES_CERT_BASE64: process.env.POSTGRES_CERT_BASE64,
 };

@@ -8,8 +8,8 @@
 'use strict';
 
 module.exports = (server, context) => {
-  const { redis } = context;
-  const clients = [redis];
+  const { postgres, redis } = context;
+  const clients = [postgres, redis];
 
   server.get('/health', (req, res) => {
     const inactiveClients = clients.filter(client => !client.status);

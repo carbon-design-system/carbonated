@@ -33,6 +33,7 @@
     "js-yaml": "^3.12.1",
     "object-assign": "^4.1.1",
     "parse-link-header": "^1.0.1",
+    "pg": "^7.8.1",
     "promise": "^8.0.2",
     "prop-types": "^15.6.2",
     "react": "^16.8.0-alpha.1",
