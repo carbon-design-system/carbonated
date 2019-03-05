@@ -12,7 +12,9 @@ const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLNonNull,
+  GraphQLList,
 } = require('graphql');
+const userType = require('./types/user');
 const viewerType = require('./types/viewer');
 
 const schema = new GraphQLSchema({
@@ -23,6 +25,18 @@ const schema = new GraphQLSchema({
         type: viewerType,
         resolve(root, args, context) {
           return context.session.user;
+        },
+      },
+      users: {
+        type: new GraphQLList(userType),
+        async resolve(root, args, context) {
+          const { User } = context;
+          const [error, users] = await User.all();
+          if (error) {
+            throw error;
+          }
+
+          return users;
         },
       },
     },

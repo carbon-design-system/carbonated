@@ -8,46 +8,32 @@
 'use strict';
 
 const { logger } = require('@carbonated/server');
-const redis = require('redis');
+const { NODE_ENV } = require('config');
+const { Pool } = require('pg');
 const { createBackoff } = require('../tools/delay');
 const safe = require('../tools/safe');
 
-function retryStrategy({ attempt }) {
-  logger.info(`retrying redis connection, attempt #${attempt}`);
-  return Math.pow(2, attempt - 1) * 100;
-}
-
-function createRedisClient(connectionString, certBase64) {
+async function createPostgresClient(connectionString, certBase64) {
   const url = new URL(connectionString);
-  let clientOptions = {
-    retry_strategy: retryStrategy,
+  const options = {
+    connectionString,
+    connectionTimeoutMillis: NODE_ENV === 'production' ? 1000 * 30 : 5000,
   };
 
   if (certBase64) {
-    clientOptions.tls = {
+    options.ssl = {
       ca: new Buffer.from(certBase64, 'base64'),
       servername: url.hostname,
     };
   }
 
-  const client = redis.createClient(
-    connectionString.replace(/^rediss/g, 'redis'),
-    clientOptions
-  );
+  const pool = new Pool(options);
+  await pool.connect();
 
-  return new Promise((resolve, reject) => {
-    client.on('ready', () => resolve(client));
-    client.on('error', error => {
-      if (error.message.includes('Redis connection to')) {
-        client.quit();
-        reject(error);
-        return;
-      }
-    });
-  });
+  return pool;
 }
 
-async function createRedisClientWithRetries(
+async function createPostgresClientWithRetries(
   connectionString,
   certBase64,
   numRetries = 5
@@ -59,11 +45,11 @@ async function createRedisClientWithRetries(
   for (let i = 0; i < numRetries; i++) {
     if (i !== 0) {
       await backoff();
-      logger.info(`retrying redis connection, attempt #${i + 1}`);
+      logger.info(`retrying pg connection, attempt #${i}`);
     }
 
     [error, client] = await safe(
-      createRedisClient(connectionString, certBase64)
+      createPostgresClient(connectionString, certBase64)
     );
     if (!error) {
       return client;
@@ -74,25 +60,37 @@ async function createRedisClientWithRetries(
 }
 
 async function create(connectionString, certBase64) {
-  const client = await createRedisClientWithRetries(
+  const pool = await createPostgresClientWithRetries(
     connectionString,
     certBase64
   );
-
   let _status = 1;
 
-  client.on('error', error => {
-    logger.error(error);
-    _status = 0;
-  });
-
-  client.on('reconnecting', () => {
-    _status = 0;
-  });
-
-  client.on('ready', () => {
-    logger.info('redis client ready');
+  pool.on('connect', () => {
+    logger.info('postgres client ready');
     _status = 1;
+  });
+
+  pool.on('error', async error => {
+    // Just logging the message as the full stack can contain secrets
+    logger.error(error.message);
+
+    if (pool.totalCount === 0) {
+      _status = 0;
+
+      const backoff = createBackoff();
+      let numRetries = 1;
+      logger.info('postgres disconnected, retrying connection');
+
+      while (pool.totalCount === 0) {
+        logger.info(`retrying postgres connection, attempt #${numRetries}`);
+        try {
+          await backoff();
+          await pool.connect();
+        } catch (e) {}
+        numRetries++;
+      }
+    }
   });
 
   const circuitBreaker = (req, res, next) => {
@@ -104,11 +102,11 @@ async function create(connectionString, certBase64) {
   };
 
   return {
-    // Redis client used to send requests or pass along to session middleware
-    client,
+    // Postgres pool for sending queries
+    client: pool,
 
     // Common circuit breaker middleware used for handlers that require an
-    // active redis client
+    // active postgres client
     circuitBreaker,
 
     // Provide way to read status of client connection, useful for health check
@@ -121,6 +119,6 @@ async function create(connectionString, certBase64) {
 
 module.exports = {
   create,
-  createRedisClient,
-  createRedisClientWithRetries,
+  createPostgresClient,
+  createPostgresClientWithRetries,
 };

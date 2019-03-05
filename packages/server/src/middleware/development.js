@@ -75,5 +75,9 @@ export function setupDevelopment(getConfig) {
     return server;
   }
 
+  if (process.env.DISABLE_DEVELOPMENT_MIDDLEWARE) {
+    return server => server;
+  }
+
   return development;
 }

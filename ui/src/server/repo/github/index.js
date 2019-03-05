@@ -19,7 +19,7 @@ const GITHUB_API_ENDPOINT = 'https://api.github.com';
 const DEFAULT_USER_AGENT = 'carbonated';
 const DEFAULT_TIMEOUT = 1000 * 30;
 
-function createClient(token) {
+function createGitHubRepo(token) {
   const baseRequestOptions = {
     baseUrl: GITHUB_API_ENDPOINT,
     headers: {
@@ -41,4 +41,6 @@ function createClient(token) {
   };
 }
 
-module.exports = createClient(GH_TOKEN);
+module.exports = {
+  createGitHubRepo,
+};

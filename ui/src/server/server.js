@@ -31,7 +31,7 @@ function getConfig() {
   };
 }
 
-module.exports = async ({ config, redis }) => {
+module.exports = async ({ config, postgres, redis, repo }) => {
   const ASSET_PATH = path.resolve(__dirname, '../../build');
   const context = {
     build: getBuildContext({
@@ -39,7 +39,9 @@ module.exports = async ({ config, redis }) => {
       getConfig,
     }),
     config,
+    postgres,
     redis,
+    repo,
   };
 
   const server = express();

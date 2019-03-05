@@ -7,16 +7,30 @@
 
 'use strict';
 
+const { logger } = require('@carbonated/server');
 const { DEPLOY_ENV } = require('config');
 const graphqlHTTP = require('express-graphql');
+const { formatError } = require('graphql/error');
 const { schema } = require('../graphql');
 
-module.exports = server => {
+module.exports = (server, context) => {
+  const { postgres } = context;
   server.use(
     '/graphql',
-    graphqlHTTP({
-      schema,
-      graphiql: DEPLOY_ENV === 'local',
+    postgres.circuitBreaker,
+    graphqlHTTP(req => {
+      return {
+        schema,
+        formatError: (...args) => {
+          logger.error(...args);
+          return formatError(...args);
+        },
+        graphiql: DEPLOY_ENV === 'local',
+        context: {
+          ...context.repo,
+          session: req.session,
+        },
+      };
     })
   );
   return server;
