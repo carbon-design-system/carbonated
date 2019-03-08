@@ -42,43 +42,45 @@ export default function Home() {
         <FormattedMessage id="home.greeting" defaultMessage="Home" />
       </h1>
 
-      <div>
-        <Query query={VIEWER_QUERY}>
-          {({ loading, error, data }) => {
-            if (loading) {
-              return 'Loading...';
-            }
-            if (error) {
-              console.error(error);
-              return 'Whoops! Something went wrong.';
-            }
+      <Query query={VIEWER_QUERY}>
+        {({ loading, error, data }) => {
+          if (loading) {
+            return 'Loading...';
+          }
+          if (error) {
+            console.error(error);
+            return 'Whoops! Something went wrong.';
+          }
 
-            if (data.viewer) {
-              return (
-                <>
-                  <p>
-                    Hi {data.viewer.name}! <span aria-label="waving">👋</span>
-                  </p>
-                  {Logout}
-                </>
-              );
-            }
-
+          if (data.viewer) {
             return (
               <>
                 <p>
-                  Hi there! <span aria-label="waving">👋</span> Looks like
-                  you're not authenticated yet, maybe try logging in?{' '}
-                  <span aria-label="finger pointing below text at login text">
-                    👇
-                  </span>
+                  Hi, {data.viewer.name}! Try checking out one of the links
+                  above
                 </p>
-                {Login}
+                {Logout}
               </>
             );
-          }}
-        </Query>
-      </div>
+          }
+
+          return (
+            <>
+              <p>
+                Hi there! Carbonated is a tool for core team members of the
+                Carbon Design System.
+              </p>
+              <p>
+                Looks like you're not authenticated yet, maybe try logging in?{' '}
+                <span aria-label="finger pointing below text at login text">
+                  👇
+                </span>
+              </p>
+              {Login}
+            </>
+          );
+        }}
+      </Query>
     </Content>
   );
 }

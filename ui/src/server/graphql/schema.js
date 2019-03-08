@@ -23,8 +23,23 @@ const schema = new GraphQLSchema({
     fields: {
       viewer: {
         type: viewerType,
-        resolve(root, args, context) {
-          return context.session.user;
+        description: 'The currently logged in user',
+        async resolve(root, args, context) {
+          const { User } = context;
+          if (
+            context.session &&
+            context.session.user &&
+            context.session.user.id
+          ) {
+            const [error, user] = await User.find(context.session.user.id);
+            if (error) {
+              throw error;
+            }
+
+            return user;
+          }
+
+          return null;
         },
       },
       users: {

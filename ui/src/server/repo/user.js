@@ -7,7 +7,15 @@
 
 'use strict';
 
+const Joi = require('joi');
 const safe = require('../tools/safe');
+
+const createUserSchema = Joi.object().keys({
+  avatarUrl: Joi.string().required(),
+  email: Joi.string().required(),
+  name: Joi.string().required(),
+  username: Joi.string().required(),
+});
 
 /**
  * Create a user repo given a postgres client.
@@ -61,7 +69,34 @@ function createUserRepo(client) {
     }
 
     if (result.rowCount === 0) {
-      return [new Error(`Unable to find a user with username ${username}`)];
+      return [null, null];
+    }
+
+    return [null, result.rows[0]];
+  }
+
+  const CREATE_USER_QUERY = `
+  INSERT INTO users (name, email, username, avatar_url)
+  VALUES ($1, $2, $3, $4)
+  RETURNING id
+  `;
+
+  async function create(config) {
+    const { error, value } = Joi.validate(config, createUserSchema);
+    if (error) {
+      return [error];
+    }
+
+    const [clientError, result] = await safe(
+      client.query(CREATE_USER_QUERY, [
+        value.name,
+        value.email,
+        value.username,
+        value.avatarUrl,
+      ])
+    );
+    if (clientError) {
+      return [clientError];
     }
 
     return [null, result.rows[0]];
@@ -69,6 +104,7 @@ function createUserRepo(client) {
 
   return {
     all,
+    create,
     find,
     findByUsername,
   };

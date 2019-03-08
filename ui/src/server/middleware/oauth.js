@@ -18,7 +18,9 @@ const uuid = require('uuid/v4');
 const safe = require('../tools/safe');
 const safeAsyncHandler = require('../tools/safeAsyncHandler');
 
-module.exports = server => {
+module.exports = (server, context) => {
+  const { User: UserRepo } = context.repo;
+
   server.get('/auth/github', (req, res) => {
     const githubOAuthURL = new URL('https://github.com/login/oauth/authorize');
     githubOAuthURL.searchParams.set('scope', 'user:email');
@@ -81,7 +83,7 @@ module.exports = server => {
         return;
       }
 
-      const [getUserError, user] = await safe(
+      const [getUserError, githubUser] = await safe(
         request({
           method: 'GET',
           url: encodeURI(`https://api.github.com/user`),
@@ -101,10 +103,38 @@ module.exports = server => {
         return;
       }
 
-      req.session.user = {
-        name: user.name,
-      };
+      const [findUserError, user] = await UserRepo.findByUsername(
+        githubUser.login
+      );
+      if (findUserError) {
+        logger.error(findUserError);
+        res.status(500).send('Internal server error');
+        return;
+      }
 
+      if (user) {
+        req.session.user = {
+          id: user.id,
+        };
+        res.redirect('/');
+        return;
+      }
+
+      const [createUserError, createdUser] = await UserRepo.create({
+        name: githubUser.name,
+        email: githubUser.email,
+        username: githubUser.login,
+        avatarUrl: githubUser.avatar_url,
+      });
+      if (createUserError) {
+        logger.error(createUserError);
+        res.status(500).send('Internal server error');
+        return;
+      }
+
+      req.session.user = {
+        id: createdUser.id,
+      };
       res.redirect('/');
     })
   );
